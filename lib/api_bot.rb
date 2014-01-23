@@ -85,7 +85,9 @@ class ApiBot
       "16bd7d454bdb8d22d0156dc4f71d3f56949cd877",
       "75c685b1e5783830518db1bf90b449ab5abe92f3",
       "b4f785742d9d1b2d6260919fc3c63b5fdf751859",
-      "babac99720a6919b648c2f2c7804dbd397766d32"
+      "babac99720a6919b648c2f2c7804dbd397766d32",
+      "57a93d7e52112f695fd186999ce49918d4fb61ea",
+      "370a9194a8378656ee9aab5994b4001aacf1be9d"
     ]
   end
 
@@ -101,6 +103,8 @@ class ApiBot
       "Remove scaffolding Code",
       "Refactor Tractor for Project Model",
       "Add Comments Model and Association",
+      "delete irrelevant rSpec tests",
+      "refactored Project controller"
     ]
   end
 
