@@ -71,12 +71,13 @@ class ApiBot
   end
 
   def sample_tracker_event_data(pt_project_id = 1)
+    author_name = authors.sample[:name]
     expected_data = { :tracker_event =>
       {
         :story_url => "http://www.pivotaltracker.com/story/show/64265964",
-        :message   => "Tyler Long added this feature",
+        :message   => "#{author_name} added this feature",
         :kind      => "story_create_activity",
-        :user_name => "Tyler Long",
+        :user_name => author_name,
         :story_id  => 64265964,
         :change_type => "create",
         :story_title => "This is a test story",
