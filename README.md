@@ -4,6 +4,15 @@ purposes of the app's real time capabilites.
 To run cd into the root of the project and run
 
 ```
+# FOR LOCAL DEV
+irb -r ./lib/api_bot.rb
+
+> bot = ApiBot.new(:dev)
+> 10.times { bot.make_commit_and_event }
+```
+
+```
+# FOR PROD
 irb -r ./lib/api_bot.rb
 
 > bot = ApiBot.new
