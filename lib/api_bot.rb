@@ -1,21 +1,44 @@
 require 'faraday'
 require 'json'
+require 'pusher'
 
 class ApiBot
 
+  attr_reader :env
+
+  def initialize(desired_env = :prod)
+    @env = desired_env
+    Pusher.app_id = '57501'
+    Pusher.key = '3568c8046d9171a5f8ee'
+    Pusher.secret = '780e1174f5e7438514f6'
+  end
+
   def make_commit_and_event
-    make_commit
-    sleep(rand(5))
-    make_tracker_event
-    sleep(rand(5))
+    2.times do
+      notification = [:make_commit, :make_tracker_event].sample
+      puts "=============================> #{notification}"
+      send(notification)
+      sleep(rand(6))
+    end
   end
 
   def make_commit
     response = post('commits', sample_commit_data.to_json)
+    make_climate
   end
 
   def make_tracker_event
     response = post('tracker_events', sample_tracker_event_data.to_json)
+  end
+
+  def make_climate
+    gpa = rand(1..4.0).round(2)
+    difference = 4.0 - gpa
+    data = [
+      { :stat => "current", :gpa => gpa },
+      { :stat => "difference", :gpa => difference }
+    ]
+    Pusher['project_15'].trigger('climate_notification', :data => data)
   end
 
   private
@@ -29,17 +52,22 @@ class ApiBot
   end
 
   def connection
-    Faraday::Connection.new "http://162.243.206.48/api/v1/"
+    if env == :dev
+      @connection ||= Faraday::Connection.new "http://localhost:8080/api/v1/"
+    else
+      Faraday::Connection.new "http://162.243.206.48/api/v1/"
+    end
   end
 
   def sample_commit_data(repo_id = 16033562)
+    message = github_messages.sample.downcase
     {
       :commit_id => commit_hashes.sample,
       :timestamp => "2014-01-13T18:45:47-08:00",
-      :message => "add readme boom!",
+      :message => message,
       :repository => {
         :id  => "#{repo_id}",
-        :url => "https://github.com/thewatts/testing-callbacks"
+        :url => "https://github.com/foofoberry/github_notification_dummy_app"
       },
       :author => authors.sample
     }
@@ -58,6 +86,21 @@ class ApiBot
       "75c685b1e5783830518db1bf90b449ab5abe92f3",
       "b4f785742d9d1b2d6260919fc3c63b5fdf751859",
       "babac99720a6919b648c2f2c7804dbd397766d32"
+    ]
+  end
+
+  def github_messages
+    [
+      "Update Readme file",
+      "Clean Specs for Project Model",
+      "Generate ProjectsController",
+      "Clean Routes",
+      "Add VCR",
+      "Remove VCR",
+      "Increase test Coverage to 99%",
+      "Remove scaffolding Code",
+      "Refactor Tractor for Project Model",
+      "Add Comments Model and Association",
     ]
   end
 
@@ -86,18 +129,64 @@ class ApiBot
     ]
   end
 
+  def kinds
+    %w( story bug chore )
+  end
+
+  def author_initials
+    {
+      "Kevin Powell"    => "KP",
+      "Tyler Long"      => "TL",
+      "Simon Taranto"   => "ST",
+      "Nathaniel Watts" => "NW",
+    }
+  end
+
+
+  def tracker_story_title(type)
+    {
+      "story" => [
+        "User logs in on homepage",
+        "User creates account",
+        "User can logout",
+        "User creates a project"
+      ],
+      "bug" => [
+        "Poor performance for admin users",
+        "Home page caching issue",
+        "Assets not compiling",
+        "Omniauth callback failing"
+      ],
+      "chore" => [
+        "Setup follower database",
+        "Flesh out design styles",
+        "Optimize Database",
+        "Run migrations on Production"
+      ]
+    }[type].sample
+  end
+
+  def types
+    %w( create finish start )
+  end
+
   def sample_tracker_event_data(pt_project_id = 1)
     author_name = authors.sample[:name]
+    initials = author_initials[author_name]
+    kind = kinds.sample
+    title = tracker_story_title(kind)
+    type = types.sample
+    id = rand(6 ** 10)
     expected_data = { :tracker_event =>
       {
-        :story_url => "http://www.pivotaltracker.com/story/show/64265964",
-        :message   => "#{author_name} added this feature",
-        :kind      => "story_create_activity",
-        :user_name => author_name,
-        :story_id  => 64265964,
-        :change_type => "create",
-        :story_title => "This is a test story",
-        :user_initials => "TL",
+        :story_url     => "http://www.pivotaltracker.com/story/show/#{id}",
+        :message       => "#{author_name} added this feature",
+        :kind          => kind,
+        :user_name     => author_name,
+        :story_id      => id,
+        :change_type   => type,
+        :story_title   => title,
+        :user_initials => initials,
         :pt_project_id => pt_project_id
       }
     }
