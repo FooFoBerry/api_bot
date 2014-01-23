@@ -39,6 +39,7 @@ class ApiBot
       { :stat => "difference", :gpa => difference }
     ]
     Pusher['project_15'].trigger('climate_notification', :data => data)
+    Pusher['project_18'].trigger('climate_notification', :data => data)
   end
 
   private
