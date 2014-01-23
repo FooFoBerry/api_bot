@@ -7,6 +7,7 @@ class ApiBot
   attr_reader :env
 
   def initialize(desired_env = :prod)
+    @commit_count = 0
     @env = desired_env
     Pusher.app_id = '57501'
     Pusher.key = '3568c8046d9171a5f8ee'
@@ -25,6 +26,24 @@ class ApiBot
   def make_commit
     response = post('commits', sample_commit_data.to_json)
     make_climate
+    @commit_count += 1
+    if @commit_count % 7 == 0
+      fail_build
+    else
+      pass_build
+    end
+  end
+
+  def pass_build
+    data = { :status => "passing" }
+    Pusher['project_15'].trigger('travis_notification', :data => data)
+    Pusher['project_18'].trigger('travis_notification', :data => data)
+  end
+
+  def fail_build
+    data = { :status => "failing" }
+    Pusher['project_15'].trigger('travis_notification', :data => data)
+    Pusher['project_18'].trigger('travis_notification', :data => data)
   end
 
   def make_tracker_event
@@ -32,7 +51,7 @@ class ApiBot
   end
 
   def make_climate
-    gpa = rand(1..4.0).round(2)
+    gpa = rand(3.3..4.0).round(2)
     difference = 4.0 - gpa
     data = [
       { :stat => "current", :gpa => gpa },
