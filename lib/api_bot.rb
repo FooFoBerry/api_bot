@@ -32,9 +32,9 @@ class ApiBot
     Faraday::Connection.new "http://162.243.206.48/api/v1/"
   end
 
-  def sample_commit_data(repo_id = 1)
+  def sample_commit_data(repo_id = 16033562)
     {
-      :commit_id => "96dd704dc8770624e5da9082498c531edf0aef4a",
+      :commit_id => commit_hashes.sample,
       :timestamp => "2014-01-13T18:45:47-08:00",
       :message => "add readme boom!",
       :repository => {
@@ -43,6 +43,22 @@ class ApiBot
       },
       :author => authors.sample
     }
+  end
+
+  def commit_hashes
+    [
+      "682a7045b390a6dad249f2495562769d06749d45",
+      "b94b44fb51261332ea07233342f9cdf8fe81596a",
+      "e62558b5b2bb1dd881532c16c5bfe8ec27246ba3",
+      "d99c9fb56f17087545461938999589a7ad4a5c62",
+      "cec7f4c3ebce960ae3aec683749bbe0eae0f6975",
+      "0a8de7d6fcab5eded2d2d38f8f42ba6fd14f4cac",
+      "d312ab67ed17bfce172847c60d88a522f5a81bdc",
+      "16bd7d454bdb8d22d0156dc4f71d3f56949cd877",
+      "75c685b1e5783830518db1bf90b449ab5abe92f3",
+      "b4f785742d9d1b2d6260919fc3c63b5fdf751859",
+      "babac99720a6919b648c2f2c7804dbd397766d32"
+    ]
   end
 
   def authors
