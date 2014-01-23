@@ -1,0 +1,21 @@
+GIT
+  remote: git://github.com/FooFoBerry/foofoberry.git
+  revision: 189450079e9e2d3fc461eca0f36b407301a6f9b0
+  specs:
+    foofoberry (0.1.1)
+      faraday
+      json
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    faraday (0.9.0)
+      multipart-post (>= 1.2, < 3)
+    json (1.8.1)
+    multipart-post (2.0.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  foofoberry!
